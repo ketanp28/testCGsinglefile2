@@ -20,7 +20,9 @@ public class OpenBESPushListenerFunction extends ScriptableFunctionBase {
         String wakeUpPage = obj.getField( KEY_WAKEUP_PAGE ).toString();
         int maxQueueCap = 0;
         Object maxQueueCapObj = obj.getField( KEY_MAX_QUEUE_CAP );
-        
+        if( maxQueueCapObj != UNDEFINED ) {
+            maxQueueCap = ( (Integer) maxQueueCapObj ).intValue(); 
+        }
         ScriptableFunction onData = (ScriptableFunction) args[ 1 ];
         ScriptableFunction onSimChange = (ScriptableFunction) args[ 2 ];
         PushService.getInstance().openBESPushChannel( port, wakeUpPage, maxQueueCap, onData, onSimChange );
@@ -45,7 +47,9 @@ public class OpenBESPushListenerFunction extends ScriptableFunctionBase {
                 throw new IllegalArgumentException( "Port is missing." );
             }
             Object wakeUpPage = obj.getField( KEY_WAKEUP_PAGE );
-            
+            if( wakeUpPage == null || wakeUpPage == UNDEFINED ) {
+                throw new IllegalArgumentException( "AppId is missing." );
+            }
         } catch( Exception e ) {
             throw new IllegalArgumentException( "Error retrieving arguments: " + e.getMessage() );
         }
@@ -55,6 +59,7 @@ public class OpenBESPushListenerFunction extends ScriptableFunctionBase {
     protected FunctionSignature[] getFunctionSignatures() {
         FunctionSignature fs = new FunctionSignature( 3 );
         fs.addParam( Object.class, true );
+        fs.addParam( ScriptableFunction.class, true );
         fs.addParam( ScriptableFunction.class, true );
         return new FunctionSignature[] { fs };
     }
